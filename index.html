@@ -1,21 +1,17 @@
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
 	<meta charset="UTF-8">
 	<title>Lista de Campamento</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
 	body { font-family: 'Poppins', sans-serif; }
-
 	.tachado {
 		text-decoration: line-through;
 		opacity: 0.6;
 	}
-
 	.btn-delete {
 		width: 22px;
 		height: 22px;
@@ -26,13 +22,11 @@
 		align-items: center;
 		justify-content: center;
 	}
-
 	.titulo-grupo {
 		text-transform: uppercase;
 		font-weight: 600;
 		cursor: grab;
 	}
-
 	.lugar-titulo {
 		font-size: 2rem;
 		text-align: center;
@@ -43,55 +37,38 @@
 		resize: none;
 		overflow: hidden;
 	}
-
 	.fecha-texto {
 		text-align: center;
 		color: gray;
 		margin-bottom: 10px;
 	}
 </style>
-
 </head>
-
 <body class="bg-light">
-
-<div class="container my-4">
-
-<h1 class="text-center">🏕️ Lista de Campamentos</h1>
-
-<textarea id="lugar" class="lugar-titulo w-100" rows="1" placeholder="Lugar Acampada">Acampada Diocesana<br>Juvenil 2026<br>"Nos salvo el amor"</textarea>
-
-<div id="textoFecha" class="fecha-texto"></div>
-
-<div class="row mb-3">
-	<div class="col-6">
-		<input type="date" id="fechaInicio" class="form-control">
+	<div class="container my-4">
+		<h1 class="text-center">🏕️ Lista de Campamento</h1>
+		<textarea id="lugar" class="lugar-titulo w-100" rows="1" placeholder="Lugar"></textarea>
+		<div id="textoFecha" class="fecha-texto"></div>
+		<div class="row mb-3">
+			<div class="col-6">
+				<input type="date" id="fechaInicio" class="form-control">
+			</div>
+			<div class="col-6">
+				<input type="date" id="fechaFin" class="form-control">
+			</div>
+		</div>
+		<div id="listas"></div>
+		<div class="mt-3">
+			<input type="text" id="nuevoTitulo" class="form-control mb-2" placeholder="Agregar subtítulo">
+			<button class="btn btn-primary w-100" onclick="agregarSubtitulo()">Agregar</button>
+		</div>
+		<div class="mt-2">
+			<button class="btn btn-outline-secondary w-100" onclick="resetearLista()">🔄 Restablecer lista</button>
+		</div>
 	</div>
-	<div class="col-6">
-		<input type="date" id="fechaFin" class="form-control">
-	</div>
-</div>
-
-<div id="listas"></div>
-
-<div class="mt-3">
-	<input type="text" id="nuevoTitulo" class="form-control mb-2" placeholder="Agregar subtítulo">
-	<button class="btn btn-primary w-100" onclick="agregarSubtitulo()">Agregar</button>
-</div>
-
-<div class="mt-2">
-	<button class="btn btn-outline-secondary w-100" onclick="resetearLista()">🔄 Restablecer lista</button>
-</div>
-
-
-</div>
-
 <!-- SORTABLE -->
-
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-
 <script>
-
 // ---------- LISTA INICIAL ----------
 const listaInicial = [
 	{
@@ -132,28 +109,23 @@ const listaInicial = [
 		items: []
 	}
 ];
-
 // ---------- CARGA ----------
 let listas;
-
 try {
 	listas = JSON.parse(localStorage.getItem("listas")) || listaInicial;
 } catch {
 	listas = listaInicial;
 }
-
 // ---------- GUARDAR ----------
 function guardar() {
 	localStorage.setItem("listas", JSON.stringify(listas));
 }
-
 // ---------- FECHA ----------
 function actualizarTextoFecha() {
 	if (!fInicio.value || !fFin.value) {
 		document.getElementById("textoFecha").innerText = "";
 		return;
 	}
-
 	const [y1,m1,d1] = fInicio.value.split("-").map(Number);
 	const [y2,m2,d2] = fFin.value.split("-").map(Number);
 
@@ -172,14 +144,11 @@ function actualizarTextoFecha() {
 
 	document.getElementById("textoFecha").innerText = texto;
 }
-
 // ---------- RENDER ----------
 function render() {
 	const cont = document.getElementById("listas");
 	cont.innerHTML = "";
-
 	listas.forEach((g,i)=>{
-
 		let html = `
 		<div class="card mb-2 grupo" data-index="${i}">
 		<div class="card-body">
@@ -216,14 +185,11 @@ function render() {
 
 		cont.innerHTML+=html;
 	});
-
 	activarDrag();
 }
-
 // ---------- DRAG ----------
 function activarDrag() {
 	const cont = document.getElementById("listas");
-
 	new Sortable(cont, {
 		animation: 150,
 		handle: ".titulo-grupo",
@@ -242,28 +208,24 @@ function activarDrag() {
 		}
 	});
 }
-
 // ---------- ACCIONES ----------
 function toggle(i,j,val){
 	listas[i].items[j].checked = val;
 	guardar();
 	render();
 }
-
 function borrarItem(i,j){
 	if(!confirm("¿Borrar item?")) return;
 	listas[i].items.splice(j,1);
 	guardar();
 	render();
 }
-
 function borrarGrupo(i){
 	if(!confirm("¿Borrar subtítulo?")) return;
 	listas.splice(i,1);
 	guardar();
 	render();
 }
-
 function addItem(i){
 	const input = document.getElementById("i_"+i);
 	if(!input.value.trim()) return;
@@ -273,7 +235,6 @@ function addItem(i){
 	guardar();
 	render();
 }
-
 function agregarSubtitulo(){
 	const t = document.getElementById("nuevoTitulo");
 	if(!t.value.trim()) return;
@@ -283,7 +244,6 @@ function agregarSubtitulo(){
 	guardar();
 	render();
 }
-
 // ---------- LUGAR ----------
 const lugar = document.getElementById("lugar");
 
@@ -298,7 +258,6 @@ function autoResize(el){
 	el.style.height="auto";
 	el.style.height=el.scrollHeight+"px";
 }
-
 // ---------- FECHAS ----------
 const fInicio = document.getElementById("fechaInicio");
 const fFin = document.getElementById("fechaFin");
@@ -313,28 +272,22 @@ fFin.value = localStorage.getItem("fin") || "";
 		actualizarTextoFecha();
 	});
 });
-
 // ---------- RESET ----------
 function resetearLista() {
 	if (!confirm("¿Seguro que querés restablecer la lista?")) return;
-
 	localStorage.clear();
 	listas = JSON.parse(JSON.stringify(listaInicial));
 
 	document.getElementById("lugar").value = "";
 	fInicio.value = "";
 	fFin.value = "";
-
 	actualizarTextoFecha();
 	render();
 }
-
 // ---------- INIT ----------
 autoResize(lugar);
 actualizarTextoFecha();
 render();
-
 </script>
-
 </body>
 </html>
